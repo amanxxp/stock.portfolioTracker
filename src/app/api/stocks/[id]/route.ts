@@ -24,7 +24,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
 export async function PUT(req:NextRequest,{ params }: { params: { id: string } }){
     try{
         const { userId }:any = verifyToken(req);
-        const { stockName, ticker, buyPrice } = await req.json();
+        const { stockName, ticker, buyPrice,quantity } = await req.json();
         const updatedStock = await prisma.stock.update({
             where: {
                 id:parseInt(params.id),
@@ -33,6 +33,7 @@ export async function PUT(req:NextRequest,{ params }: { params: { id: string } }
             data: {
                 stockName,
                 ticker,
+                quantity,
                 buyPrice,
             }
         });
