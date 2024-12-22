@@ -1,13 +1,12 @@
 "use client";
 
 import React, { useState, FormEvent, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import StockTable from '@/app/components/StockTable';
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Toaster, toast } from 'sonner';
-import { DollarSign, TrendingUp, TrendingDown, Pencil, Trash2, Plus, Loader2 } from 'lucide-react';
+import { Plus, Loader2 } from 'lucide-react';
+import StockDialog from '@/app/components/StockDialog';
+import PortfolioMetrics from '../components/PortfolioMetrics';
 
 interface Stock {
   id: number;
@@ -52,21 +51,17 @@ const PortfolioDashboard: React.FC = () => {
     });
       if (!response.ok) throw new Error('Failed to fetch stocks');
       const data = await response.json();
-      console.log(data)
       setStocks(data.stocks);
-      console.log(stocks);
     } catch (error) {
       toast.error('Failed to load stocks');
     } finally {
       setIsLoading(false);
     }
   };
-  console.log(stocks);
 
   useEffect(() => {
     fetchStocks();
   }, []);
-  console.log(stocks);
 
   // Calculate portfolio metrics
   const calculateMetrics = () => {
@@ -194,41 +189,7 @@ const PortfolioDashboard: React.FC = () => {
       <Toaster position="top-center" expand={true} richColors />
       
       {/* Portfolio Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Invested</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${metrics.totalInvested.toFixed(2)}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Current Value</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">${metrics.currentValue.toFixed(2)}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Profit/Loss</CardTitle>
-            {metrics.totalProfit >= 0 ? (
-              <TrendingUp className="h-4 w-4 text-green-500" />
-            ) : (
-              <TrendingDown className="h-4 w-4 text-red-500" />
-            )}
-          </CardHeader>
-          <CardContent>
-            <div className={`text-2xl font-bold ${metrics.totalProfit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-              ${Math.abs(metrics.totalProfit).toFixed(2)}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <PortfolioMetrics metrics={metrics} />
 
       {/* Add Stock Button */}
       <Button onClick={() => {
@@ -241,126 +202,23 @@ const PortfolioDashboard: React.FC = () => {
       </Button>
 
       {/* Stocks Table */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Portfolio Holdings</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {stocks.length === 0 ? (
-            <div className="text-center py-6 text-muted-foreground">
-              No stocks in your portfolio. Add some stocks to get started!
-            </div>
-          ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Ticker</TableHead>
-                  <TableHead className="text-right">Quantity</TableHead>
-                  <TableHead className="text-right">Buy Price</TableHead>
-                  <TableHead className="text-right">Current Price</TableHead>
-                  <TableHead className="text-right">Profit/Loss</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {stocks.map((stock) => {
-                  const profit = (stock.currentPrice - stock.buyPrice) * stock.quantity;
-                  return (
-                    <TableRow key={stock.id}>
-                      <TableCell>{stock.stockName}</TableCell>
-                      <TableCell>{stock.ticker}</TableCell>
-                      <TableCell className="text-right">{stock.quantity}</TableCell>
-                      <TableCell className="text-right">${stock.buyPrice}</TableCell>
-                      <TableCell className="text-right">${stock.currentPrice}</TableCell>
-                      <TableCell className={`text-right ${profit >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        ${profit.toFixed(2)}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button variant="ghost" size="sm" onClick={() => handleEdit(stock)}>
-                          <Pencil className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm"  disabled={deletingStockId===stock.id} onClick={() => handleDelete(stock.id)}>
-                        {deletingStockId===stock.id ? (
-                          <Loader2 className="h-4 w-4 animate-spin" /> 
-                           ) : (
-                           <Trash2 className="h-4 w-4" /> 
-                           )}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          )}
-        </CardContent>
-      </Card>
+    <StockTable  
+      stocks={stocks}
+      handleEdit={handleEdit}
+      handleDelete={handleDelete}
+      deletingStockId={deletingStockId}
+    />
 
       {/* Add/Edit Stock Dialog */}
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{editingStock ? 'Edit Stock' : 'Add Stock'}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="text-sm font-medium">Company Name</label>
-              <Input
-                value={formData.stockName}
-                onChange={(e) => setFormData({ ...formData, stockName: e.target.value })}
-                placeholder="Enter company name"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Ticker Symbol</label>
-              <Input
-                value={formData.ticker}
-                onChange={(e) => setFormData({ ...formData, ticker: e.target.value })}
-                placeholder="Enter ticker symbol"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Quantity</label>
-              <Input
-                type="number"
-                value={formData.quantity}
-                onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
-                placeholder="Enter quantity"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-            <div>
-              <label className="text-sm font-medium">Buy Price</label>
-              <Input
-                type="number"
-                value={formData.buyPrice}
-                onChange={(e) => setFormData({ ...formData, buyPrice: e.target.value })}
-                placeholder="Enter buy price"
-                required
-                disabled={isSubmitting}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {editingStock ? 'Updating...' : 'Adding...'}
-                  </>
-                ) : (
-                  editingStock ? 'Update Stock' : 'Add Stock'
-                )}
-              </Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
+      <StockDialog
+        isDialogOpen={isDialogOpen}
+        setIsDialogOpen={setIsDialogOpen}
+        formData={formData}
+        setFormData={setFormData}
+        handleSubmit={handleSubmit}
+        isSubmitting={isSubmitting}
+        editingStock={editingStock}
+      />
     </div>
   );
 };
