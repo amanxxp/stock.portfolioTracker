@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useState, FormEvent, useEffect } from 'react';
-import StockTable from '@/app/components/StockTable';
+import React, { useState, FormEvent, useEffect } from "react";
+import StockTable from "@/app/components/StockTable";
 import { Button } from "@/components/ui/button";
-import { Toaster, toast } from 'sonner';
-import { Plus, Loader2 } from 'lucide-react';
-import StockDialog from '@/app/components/StockDialog';
-import PortfolioMetrics from '../components/PortfolioMetrics';
+import { Toaster, toast } from "sonner";
+import { Plus, Loader2 } from "lucide-react";
+import StockDialog from "@/app/components/StockDialog";
+import PortfolioMetrics from "../components/PortfolioMetrics";
+import PortfolioCharts from "../components/PortfolioCharts";
 
 interface Stock {
   id: number;
@@ -33,10 +34,10 @@ const PortfolioDashboard: React.FC = () => {
   const [deletingStockId, setDeletingStockId] = useState<number | null>(null);
 
   const [formData, setFormData] = useState<FormData>({
-    stockName: '',
-    ticker: '',
-    quantity: '',
-    buyPrice: ''
+    stockName: "",
+    ticker: "",
+    quantity: "",
+    buyPrice: "",
   });
 
   const getToken = () => sessionStorage.getItem("token");
@@ -44,16 +45,16 @@ const PortfolioDashboard: React.FC = () => {
   const fetchStocks = async () => {
     try {
       const token = getToken(); // Fetch token from sessionStorage
-    const response = await fetch('/api/stocks', {
-      headers: {
-        Authorization: `Bearer ${token}`, // Attach token to Authorization header
-      },
-    });
-      if (!response.ok) throw new Error('Failed to fetch stocks');
+      const response = await fetch("/api/stocks", {
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token to Authorization header
+        },
+      });
+      if (!response.ok) throw new Error("Failed to fetch stocks");
       const data = await response.json();
       setStocks(data.stocks);
     } catch (error) {
-      toast.error('Failed to load stocks');
+      toast.error("Failed to load stocks");
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +75,7 @@ const PortfolioDashboard: React.FC = () => {
         return {
           totalInvested: acc.totalInvested + invested,
           currentValue: acc.currentValue + current,
-          totalProfit: acc.totalProfit + profit
+          totalProfit: acc.totalProfit + profit,
         };
       },
       { totalInvested: 0, currentValue: 0, totalProfit: 0 }
@@ -95,43 +96,44 @@ const PortfolioDashboard: React.FC = () => {
         ticker: formData.ticker,
         quantity: Number(formData.quantity),
         buyPrice: Number(formData.buyPrice),
-        currentPrice: Number(formData.buyPrice) // In a real app, fetch current price from API
+        currentPrice: Number(formData.buyPrice), // In a real app, fetch current price from API
       };
 
       let response;
-      
+
       if (editingStock) {
         // Update existing stock
         response = await fetch(`/api/stocks/${editingStock.id}`, {
-          method: 'PUT',
+          method: "PUT",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`, // Attach token
           },
-          body: JSON.stringify(stockData)
+          body: JSON.stringify(stockData),
         });
       } else {
         // Add new stock
-        response = await fetch('/api/stocks', {
-          method: 'POST',
+        response = await fetch("/api/stocks", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
             Authorization: `Bearer ${token}`, // Attach token
           },
-          body: JSON.stringify(stockData)
+          body: JSON.stringify(stockData),
         });
       }
 
-      if (!response.ok) throw new Error('Failed to save stock');
+      if (!response.ok) throw new Error("Failed to save stock");
 
-      toast.success(editingStock ? 'Stock updated successfully' : 'Stock added successfully');
+      toast.success(
+        editingStock ? "Stock updated successfully" : "Stock added successfully"
+      );
       await fetchStocks(); // Refresh stocks list
       setIsDialogOpen(false);
       setEditingStock(null);
-      setFormData({ stockName: '', ticker: '', quantity: '', buyPrice: '' });
-
+      setFormData({ stockName: "", ticker: "", quantity: "", buyPrice: "" });
     } catch (error) {
-      toast.error('Failed to save stock');
+      toast.error("Failed to save stock");
     } finally {
       setIsSubmitting(false);
     }
@@ -145,11 +147,11 @@ const PortfolioDashboard: React.FC = () => {
         stockName: stock.stockName,
         ticker: stock.ticker,
         quantity: stock.quantity.toString(),
-        buyPrice: stock.buyPrice.toString()
+        buyPrice: stock.buyPrice.toString(),
       });
       setIsDialogOpen(true);
     } catch (error) {
-      toast.error('Failed to load stock details');
+      toast.error("Failed to load stock details");
     }
   };
 
@@ -158,20 +160,20 @@ const PortfolioDashboard: React.FC = () => {
     try {
       setDeletingStockId(stockId);
       const token = getToken(); // Fetch token from localStorage
-    const response = await fetch(`/api/stocks/${stockId}`, {
-      method: 'DELETE',
-      headers: {
-        Authorization: `Bearer ${token}`, // Attach token
-      },
-    });
-      
-      if (!response.ok) throw new Error('Failed to delete stock');
-      
-      toast.success('Stock deleted successfully');
+      const response = await fetch(`/api/stocks/${stockId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`, // Attach token
+        },
+      });
+
+      if (!response.ok) throw new Error("Failed to delete stock");
+
+      toast.success("Stock deleted successfully");
       await fetchStocks(); // Refresh stocks list
     } catch (error) {
-      toast.error('Failed to delete stock');
-    }finally{
+      toast.error("Failed to delete stock");
+    } finally {
       setDeletingStockId(null);
     }
   };
@@ -187,27 +189,34 @@ const PortfolioDashboard: React.FC = () => {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       <Toaster position="top-center" expand={true} richColors />
-      
+
       {/* Portfolio Metrics */}
-      <PortfolioMetrics metrics={metrics} />
+      <PortfolioMetrics stocks={stocks} metrics={metrics} />
 
       {/* Add Stock Button */}
-      <Button onClick={() => {
-        setEditingStock(null);
-        setFormData({ stockName: '', ticker: '', quantity: '', buyPrice: '' });
-        setIsDialogOpen(true);
-      }}>
+      <Button
+        onClick={() => {
+          setEditingStock(null);
+          setFormData({
+            stockName: "",
+            ticker: "",
+            quantity: "",
+            buyPrice: "",
+          });
+          setIsDialogOpen(true);
+        }}
+      >
         <Plus className="h-4 w-4 mr-2" />
         Add Stock
       </Button>
 
       {/* Stocks Table */}
-    <StockTable  
-      stocks={stocks}
-      handleEdit={handleEdit}
-      handleDelete={handleDelete}
-      deletingStockId={deletingStockId}
-    />
+      <StockTable
+        stocks={stocks}
+        handleEdit={handleEdit}
+        handleDelete={handleDelete}
+        deletingStockId={deletingStockId}
+      />
 
       {/* Add/Edit Stock Dialog */}
       <StockDialog

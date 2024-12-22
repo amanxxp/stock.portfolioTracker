@@ -8,14 +8,24 @@ import {
   Wallet,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import PortfolioCharts from "./PortfolioCharts";
+interface Stock {
+  id: number;
+  stockName: string;
+  ticker: string;
+  quantity: number;
+  buyPrice: number;
+  currentPrice: number;
+}
 interface PortfolioMetricsProps {
   metrics: {
     totalInvested: number;
     currentValue: number;
     totalProfit: number;
   };
+  stocks: Stock[];
 }
-const PortfolioMetrics: React.FC<PortfolioMetricsProps> = ({ metrics }) => {
+const PortfolioMetrics: React.FC<PortfolioMetricsProps> = ({ metrics,stocks }) => {
   const percentageChange =
     ((metrics.currentValue - metrics.totalInvested) / metrics.totalInvested) *
     100;
@@ -66,7 +76,7 @@ const PortfolioMetrics: React.FC<PortfolioMetricsProps> = ({ metrics }) => {
     </div>
     <div className="mt-3 text-sm text-muted-foreground">
       {/* Add some extra stats or information here */}
-      <p>More details about your portfolio can be added here.</p>
+      <PortfolioCharts stocks={stocks} />
     </div>
   </Card>
 
