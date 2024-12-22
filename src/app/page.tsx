@@ -16,8 +16,8 @@ const AuthPage = () => {
   const router = useRouter();
 
   const testCredentials = {
-    email: "test@example.com",
-    password: "test123"
+    email: "aman@test.com",
+    password: "123456"
   };
 
   const [formData, setFormData] = useState({
@@ -59,8 +59,8 @@ const AuthPage = () => {
       }
 
       // Save token and user data to localStorage
-      localStorage.setItem('token', data.token);
-      localStorage.setItem('user', JSON.stringify(data.user));
+      sessionStorage.setItem('token', data.token);
+      sessionStorage.setItem('user', JSON.stringify(data.user));
 
       toast.success(isLogin ? "Successfully signed in!" : "Account created successfully!");
       await new Promise(resolve => setTimeout(resolve, 1000));
