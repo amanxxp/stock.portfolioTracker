@@ -4,6 +4,7 @@ import { LogOut, User } from "lucide-react";
 import { WelcomeMsg } from "@/components/WelcomeMsg";
 import { useRouter } from "next/navigation";
 import { HeaderLogo } from "@/components/HeaderLogo";
+import { Navigation } from "@/components/navigation";
 
 export const Header = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -37,8 +38,9 @@ export const Header = () => {
     <header className="bg-gradient-to-b from-blue-700 to-blue-500 px-4 py-10 lg:px-14 pb-46">
       <div className="max-w-screen-2xl mx-auto">
         <div className="w-full flex items-center justify-between mb-14">
-          <div className="flex items-center lg:gap-x-16">
+          <div className="flex items-center lg:gap-x-16 ">
             <HeaderLogo />
+            <Navigation/>
           </div>
           <div className="relative">
             {/* User Avatar */}

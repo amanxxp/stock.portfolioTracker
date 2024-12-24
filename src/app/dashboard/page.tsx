@@ -189,7 +189,7 @@ const PortfolioDashboard: React.FC = () => {
 
   return (
     <>
-    <Header/>
+    {/* <Header/> */}
     <div className="px-6 -mt-[70px] max-w-[1450px] mx-auto space-y-6">
     {/* <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24 py-12"> */}
       <Toaster position="top-center" expand={true} richColors />
