@@ -6,9 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Toaster, toast } from "sonner";
 import { Plus, Loader2 } from "lucide-react";
 import StockDialog from "@/app/components/StockDialog";
-import PortfolioMetrics from "../components/PortfolioMetrics";
-import PortfolioCharts from "../components/PortfolioCharts";
-import Header from "../components/Header";
+import PortfolioMetrics from "../../components/PortfolioMetrics";
 
 interface Stock {
   id: number;
@@ -26,7 +24,7 @@ interface FormData {
   buyPrice: string;
 }
 
-const PortfolioDashboard: React.FC = () => {
+const Stocks: React.FC = () => {
   const [stocks, setStocks] = useState<Stock[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [editingStock, setEditingStock] = useState<Stock | null>(null);
@@ -64,28 +62,6 @@ const PortfolioDashboard: React.FC = () => {
   useEffect(() => {
     fetchStocks();
   }, []);
-
-  // Calculate portfolio metrics
-  const calculateMetrics = () => {
-    return stocks.reduce(
-      (acc, stock) => {
-        const invested = stock.quantity * stock.buyPrice;
-        const current = stock.quantity * stock.currentPrice;
-        const profit = current - invested;
-
-        return {
-          totalInvested: acc.totalInvested + invested,
-          currentValue: acc.currentValue + current,
-          totalProfit: acc.totalProfit + profit,
-        };
-      },
-      { totalInvested: 0, currentValue: 0, totalProfit: 0 }
-    );
-  };
-
-  const metrics = calculateMetrics();
-
-  // Form submit handler
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -178,7 +154,6 @@ const PortfolioDashboard: React.FC = () => {
       setDeletingStockId(null);
     }
   };
-
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -186,55 +161,35 @@ const PortfolioDashboard: React.FC = () => {
       </div>
     );
   }
-
   return (
     <>
-    {/* <Header/> */}
-    <div className="px-6 -mt-[70px] max-w-[1450px] mx-auto space-y-6">
-    {/* <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24 py-12"> */}
-      <Toaster position="top-center" expand={true} richColors />
+      <div className="px-6 -mt-[70px] max-w-[1450px] mx-auto space-y-6">
+        <Toaster position="top-center" expand={true} richColors />
 
-      {/* Portfolio Metrics */}
-      <PortfolioMetrics stocks={stocks} metrics={metrics} />
+        {/* Stocks Table */}
+        <StockTable
+          stocks={stocks}
+          handleEdit={handleEdit}
+          handleDelete={handleDelete}
+          setEditingStock={setEditingStock}
+          setFormData={setFormData}
+          setIsDialogOpen={setIsDialogOpen}
+          deletingStockId={deletingStockId}
+        />
 
-      {/* Add Stock Button */}
-      <Button
-        onClick={() => {
-          setEditingStock(null);
-          setFormData({
-            stockName: "",
-            ticker: "",
-            quantity: "",
-            buyPrice: "",
-          });
-          setIsDialogOpen(true);
-        }}
-      >
-        <Plus className="h-4 w-4 mr-2" />
-        Add Stock
-      </Button>
-
-      {/* Stocks Table */}
-      <StockTable
-        stocks={stocks}
-        handleEdit={handleEdit}
-        handleDelete={handleDelete}
-        deletingStockId={deletingStockId}
-      />
-
-      {/* Add/Edit Stock Dialog */}
-      <StockDialog
-        isDialogOpen={isDialogOpen}
-        setIsDialogOpen={setIsDialogOpen}
-        formData={formData}
-        setFormData={setFormData}
-        handleSubmit={handleSubmit}
-        isSubmitting={isSubmitting}
-        editingStock={editingStock}
-      />
-    </div>
+        {/* Add/Edit Stock Dialog */}
+        <StockDialog
+          isDialogOpen={isDialogOpen}
+          setIsDialogOpen={setIsDialogOpen}
+          formData={formData}
+          setFormData={setFormData}
+          handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          editingStock={editingStock}
+        />
+      </div>
     </>
   );
 };
 
-export default PortfolioDashboard;
+export default Stocks;

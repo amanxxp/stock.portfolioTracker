@@ -30,7 +30,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Header/>
+        <Header/> 
+        {/* {TODO remove the page.tsx and add a loutout.tsx in (UI) and add a (auth) signin and signup} */}
         {children}
         <Toaster />
       </body>

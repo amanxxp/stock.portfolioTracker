@@ -19,8 +19,8 @@ const routes = [
     label: "Transactions",
   },
   {
-    href: "/accounts",
-    label: "Accounts",
+    href: "/stocks",
+    label: "Stocks",
   },
   {
     href: "/categories",
