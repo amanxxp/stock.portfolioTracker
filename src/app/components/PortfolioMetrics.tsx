@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   DollarSign,
@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import PortfolioCharts from "./PortfolioCharts";
+import SmStockDialog from "./SmStockDialog";
 interface Stock {
   id: number;
   stockName: string;
@@ -33,10 +34,12 @@ const PortfolioMetrics: React.FC<PortfolioMetricsProps> = ({
     ((metrics.currentValue - metrics.totalInvested) / metrics.totalInvested) *
     100;
 
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+
   return (
-    <div className="space-y-4 p-4 bg-background">
+    <div className="space-y-4 p-4 rounded-lg bg-background">
       {/* Header Section */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b pb-4 mt-2">
         <div className="flex items-center gap-3 sm:gap-4">
           <LineChart className="h-10 w-10 text-primary" />
           <div>
@@ -62,7 +65,7 @@ const PortfolioMetrics: React.FC<PortfolioMetricsProps> = ({
           </div>
         </div>
 
-        <div className="flex items-center gap-3 mt-3 sm:mt-0">
+        <div className="flex items-center gap-3 mt-3 sm:mt-0 ">
           <Wallet className="h-4 w-4 text-muted-foreground" />
           <span className="text-sm font-medium">Total Portfolio Value:</span>
           <span className="text-sm font-bold">
@@ -75,7 +78,7 @@ const PortfolioMetrics: React.FC<PortfolioMetricsProps> = ({
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-2xl font-medium">
-              Total Invested
+              Invested Value
             </CardTitle>
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
@@ -121,17 +124,27 @@ const PortfolioMetrics: React.FC<PortfolioMetricsProps> = ({
         </Card>
       </div>
 
-      {/* Card with additional information (example of improving design) */}
-      <Card className="p-4 bg-card rounded-lg shadow-md">
+      <Card className="p-2 bg-card rounded-lg shadow-md">
         <div className="flex justify-between items-center">
-          <h2 className="text-lg font-semibold">Additional Stats</h2>
-          <Button size="sm" variant="outline" className="text-primary">
+          <h2 className="text-lg font-semibold mt-2 ml-2">Additional Stats</h2>
+          <Button
+            size="lg"
+            variant="stock"
+            className=" mr-2"
+            onClick={() => {
+              setIsDialogOpen(true);
+            }}
+          >
             {/*TODO pop up dialog box of all the stock person have*/}
             View Details
           </Button>
+          <SmStockDialog
+            isDialogOpen={isDialogOpen}
+            setIsDialogOpen={setIsDialogOpen}
+            stocks={stocks}
+          />
         </div>
-        <div className="p-8 ">
-          {/* Add some extra stats or information here */}
+        <div className="p-6">
           <PortfolioCharts stocks={stocks} />
         </div>
       </Card>

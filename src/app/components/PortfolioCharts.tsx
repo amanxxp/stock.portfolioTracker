@@ -7,7 +7,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   BarChart,
   Bar,
@@ -89,14 +88,16 @@ const PortfolioCharts: React.FC<PortfolioChartsProps> = ({ stocks }) => {
                 label={({ name, percent }) =>
                   `${name} (${(percent * 100).toFixed(0)}%)`
                 }
-                outerRadius={80}
+                outerRadius={80} // Outer radius of the donut
+                innerRadius={60} // Inner radius to create the "hole" (donut effect)
                 fill="#8884d8"
                 dataKey="value"
+                className="text-sm font-bold"
               >
                 {compositionData.map((entry, index) => (
                   <Cell
                     key={`cell-${index}`}
-                    fill={COLORS[index % COLORS.length]}
+                    fill={COLORS[index % COLORS.length]} // Assign colors from your palette
                   />
                 ))}
               </Pie>
@@ -215,31 +216,11 @@ const PortfolioCharts: React.FC<PortfolioChartsProps> = ({ stocks }) => {
   };
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {/* Portfolio Composition Chart */}
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-base font-semibold">
-            Portfolio Composition
-          </CardTitle>
-          <Select
-            value={compositionChartType}
-            onValueChange={setCompositionChartType}
-          >
-            <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Chart Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="pie">Pie Chart</SelectItem>
-              <SelectItem value="radial">Radial Chart</SelectItem>
-            </SelectContent>
-          </Select>
-        </CardHeader>
-        <CardContent>{renderCompositionChart()}</CardContent>
-      </Card>
-
-      {/* Portfolio Performance Chart */}
-      <Card>
+    <div className="grid grid-cols-1 md:grid-cols-3  gap-4">
+      {/* Portfolio Performance Chart (2x the size) */}
+      <Card className="col-span-2">
+        {" "}
+        {/* This makes it 2x the size */}
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-base font-semibold">
             Portfolio Performance
@@ -259,6 +240,30 @@ const PortfolioCharts: React.FC<PortfolioChartsProps> = ({ stocks }) => {
           </Select>
         </CardHeader>
         <CardContent>{renderPerformanceChart()}</CardContent>
+      </Card>
+
+      {/* Portfolio Composition Chart (1/3 of the size) */}
+      <Card className="col-span-1">
+        {" "}
+        {/* This makes it 1/3 the size */}
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-base font-semibold">
+            Portfolio Composition
+          </CardTitle>
+          <Select
+            value={compositionChartType}
+            onValueChange={setCompositionChartType}
+          >
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Chart Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="pie">Pie Chart</SelectItem>
+              <SelectItem value="radial">Radial Chart</SelectItem>
+            </SelectContent>
+          </Select>
+        </CardHeader>
+        <CardContent>{renderCompositionChart()}</CardContent>
       </Card>
     </div>
   );

@@ -60,7 +60,7 @@ const AuthPage = () => {
 
       // Save token and user data to localStorage
       sessionStorage.setItem('token', data.token);
-      sessionStorage.setItem('user', JSON.stringify(data.user));
+      sessionStorage.setItem('user', JSON.stringify(data.user.name));
 
       toast.success(isLogin ? "Successfully signed in!" : "Account created successfully!");
       await new Promise(resolve => setTimeout(resolve, 1000));

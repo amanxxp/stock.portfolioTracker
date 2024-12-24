@@ -8,6 +8,7 @@ import { Plus, Loader2 } from "lucide-react";
 import StockDialog from "@/app/components/StockDialog";
 import PortfolioMetrics from "../components/PortfolioMetrics";
 import PortfolioCharts from "../components/PortfolioCharts";
+import Header from "../components/Header";
 
 interface Stock {
   id: number;
@@ -187,7 +188,10 @@ const PortfolioDashboard: React.FC = () => {
   }
 
   return (
-    <div className="p-6 max-w-7xl mx-auto space-y-6">
+    <>
+    <Header/>
+    <div className="px-6 -mt-[70px] max-w-[1450px] mx-auto space-y-6">
+    {/* <div className="max-w-screen-2xl mx-auto w-full pb-10 -mt-24 py-12"> */}
       <Toaster position="top-center" expand={true} richColors />
 
       {/* Portfolio Metrics */}
@@ -229,6 +233,7 @@ const PortfolioDashboard: React.FC = () => {
         editingStock={editingStock}
       />
     </div>
+    </>
   );
 };
 
