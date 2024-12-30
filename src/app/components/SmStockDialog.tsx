@@ -35,7 +35,7 @@ const StockDialog: React.FC<StockDialogProps> = ({
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Stock Deatil</DialogTitle>
+          <DialogTitle>Stock Detail</DialogTitle>
         </DialogHeader>
 
         <Card>

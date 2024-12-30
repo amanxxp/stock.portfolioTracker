@@ -20,8 +20,8 @@ export async function GET(req:NextRequest){
 export async function POST(req:NextRequest){
     try{
         const { userId }:any = verifyToken(req);
-        const { stockName, ticker, buyPrice } = await req.json();
-        if (!stockName || !ticker || !buyPrice) {
+        const { stockName, ticker,quantity, buyPrice } = await req.json();
+        if (!stockName ||!quantity ||!ticker || !buyPrice) {
             return NextResponse.json({ error: "Missing fields" }, { status: 400 });
         }
         const userExists = await prisma.user.findUnique({
@@ -35,6 +35,7 @@ export async function POST(req:NextRequest){
             data:{
                 stockName,
                 ticker,
+                quantity,
                 buyPrice,
                 userId: userId,
             },
